@@ -1,52 +1,69 @@
-import math
 import random
 
 
-def is_prime(n):
-    if n % 2 == 0 or n % 5 == 0:
+def gcd(a, b):
+    if a < 0:
+        a = -a
+    if b < 0:
+        b = -b
+    if b > a:
+        a, b = b, a
+    while b > 0:
+        a, b = b, a % b
+    return a
+
+
+def is_prime(n, k):
+    if n == 2:
+        return True
+
+    if n % 2 == 0:
         return False
-    for i in range(3, int(math.sqrt(n)+1), 2):
-        if n % i == 0:
+
+    r, s = 0, n - 1
+    while s % 2 == 0:
+        r += 1
+        s //= 2
+    for _ in range(k):
+        a = random.randrange(2, n - 1)
+        x = pow(a, s, n)
+        if x == 1 or x == n - 1:
+            continue
+        for _ in range(r - 1):
+            x = pow(x, 2, n)
+            if x == n - 1:
+                break
+        else:
             return False
     return True
 
 
-def are_relatively_prime(a, b):
-    for n in range(2, min(a, b) + 1):
-        if a % n == b % n == 0:
-            return False
-    return True
+def generate_key_pairs(key_length):
+    p = random.randrange(1 << int(0.5*key_length-1), 1 << int(0.5*key_length))
+    while is_prime(p, 40) is not True:
+        p = random.randrange(1 << int(0.5*key_length-1), 1 << int(0.5*key_length))
 
+    e = 65537
 
-def generate_key_pair(key_length):
-    minimum = 1 << (key_length - 1)
-    maximum = 1 << (key_length + 1)
+    q = random.randrange(1 << int(0.5*key_length-1), 1 << int(0.5*key_length))
+    while is_prime(q, 40) is not True or q == p or gcd(e, phi) != 1:
+        q = random.randrange(1 << int(0.5*key_length-1), 1 << int(0.5*key_length))
+        if p < q:
+            p, q = q, p
 
-    p = random.randint(math.pow(2, (key_length//2) - 1), math.pow(2, (key_length//2) + 1))
-    q = random.randint(math.pow(2, (key_length//2) - 1), math.pow(2, (key_length//2) + 1))
+            n = p*q
+            phi = (p-1)*(q-1)
 
-    print("INITIAL P: " + str(p))
-    print("INITIAL Q: " + str(q))
-
-    while not is_prime(p):
-        p = random.randint(math.pow(2, (key_length//2) - 1), math.pow(2, (key_length//2) + 1))
-    while not is_prime(q) or not (minimum <= p*q <= maximum) or (q == p):
-        q = random.randint(math.pow(2, (key_length//2) - 1), math.pow(2, (key_length//2) + 1))
-
-    print("FINAL P: " + str(p))
-    print("FINAL Q: " + str(q))
-
-    for e in range(3, (p-1)*(q-1), 2):
-        if are_relatively_prime(e, (p-1)*(q-1)):
+    for k in range(0, e):
+        d = (1 + k*phi) / e
+        if d.is_integer():
+            d = int(d)
             break
 
-    print("E: " + str(e))
+    print("PUBLIC KEY: ", n, e)
+    print("PRIVATE KEY: ", n, d)
 
-    for d in range(3, (p-1)*(q-1), 2):
-        if d * e % (p-1)*(q-1) == 1:
-            break
-
-    print("D: " + str(d))
+    return [n, e, d]
 
 
-generate_key_pair(16)
+generate_key_pairs(64)

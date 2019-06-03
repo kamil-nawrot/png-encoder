@@ -1,9 +1,13 @@
 import os
-fileName = "./img/image.png"
+import zlib
+import cmath
+import numpy as np
+import matplotlib.pyplot as plt
+
+fileName = "./img/image0.png"
 imageFile = open(fileName, "rb")
 fileSize = os.path.getsize(fileName)
 print("FILE SIZE (in bytes): " + str(fileSize))
-
 
 def check_if_png(signature):
     if type(signature) is bytes and signature == b'\x89PNG\r\n\x1a\n':
@@ -17,7 +21,7 @@ def check_if_png(signature):
 
 
 def find_chunk(chunk_type):
-    imageFile.seek(0,0)
+    imageFile.seek(0, 0)
     while imageFile.tell() < fileSize:
         if imageFile.read(1).find(bytes(chunk_type[0], 'utf-8')) != -1:
             if imageFile.read(3).find(bytes(chunk_type[1:4], 'utf-8')) != -1:
@@ -57,6 +61,10 @@ if check_if_png(fileSig):
         return switcher.get(color, "invalid color type")
 
 
+    def chunks(l, n):
+        for i in range(0, len(l), n):
+            yield l[i:i + n]
+
     colorType = int.from_bytes(imageFile.read(1), byteorder="big")
     print("COLOR TYPE:             " + color_type_switch(colorType))
     compressionMethod = int.from_bytes(imageFile.read(1), byteorder="big")
@@ -93,7 +101,7 @@ if check_if_png(fileSig):
     if not find_chunk("iTXt"):
         if not find_chunk("tEXt"):
             if not find_chunk("zTXt"):
-                print ("no textual data found")
+                print("no textual data found")
             else:
                 chunkSize = find_chunk("zTXt")
         else:
@@ -109,6 +117,39 @@ if check_if_png(fileSig):
     find_chunk("cHRM")
 
     chunkSize = find_chunk("IDAT")
+    data = imageFile.read(chunkSize)
+    pixelArray = []
+    print(data)
+    decompressed = zlib.decompress(data)
+    print(decompressed)
+    for index, pixel in enumerate(decompressed):
+        if index % (3*width + 1) is not 0:
+            pixelArray.append(pixel)
+
+    redChannel = []
+    greenChannel = []
+    blueChannel = []
+    pixelArray = list(chunks(pixelArray, 3))
+    print(pixelArray)
+    for pixel in pixelArray:
+        redChannel.append(pixel[0])
+        greenChannel.append(pixel[1])
+        blueChannel.append(pixel[2])
+
+    red_spectrum = np.fft.fft(redChannel[:1024])
+    red_spectrum_amp = np.abs(red_spectrum)
+    plt.plot(red_spectrum_amp)
+    plt.show()
+
+    green_spectrum = np.fft.fft(greenChannel[:1024])
+    green_spectrum_amp = np.abs(green_spectrum)
+    plt.plot(green_spectrum_amp)
+    plt.show()
+
+    blue_spectrum = np.fft.fft(blueChannel[:1024])
+    blue_spectrum_amp = np.abs(blue_spectrum)
+    plt.plot(blue_spectrum_amp)
+    plt.show()
 
 else:
     print("wrong file format")

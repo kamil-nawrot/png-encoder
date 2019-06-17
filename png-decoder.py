@@ -26,7 +26,7 @@ class ImageFile:
         self.redChannel = []
         self.greenChannel = []
         self.blueChannel = []
-        self.keys = []
+        self.keyPair = []
 
     def find_chunk(self, chunk_type):
         self.desc.seek(0, 0)
@@ -150,8 +150,8 @@ class ImageFile:
             if index % (3 * self.imageProperties["width"] + 1) is not 0:
                 image_data += pixel.to_bytes(1, byteorder="big")
 
-        [n, e, d] = rsa.generate_key_pairs(256)
-        self.keys = [n, e, d]
+        self.keyPair = rsa.RSA(256)
+        self.keyPair.generate_key_pairs()
         encoded_data = b""
         encoded_block = b""
 
@@ -160,7 +160,7 @@ class ImageFile:
             encoded_block = b""
             for byte in image_data[32*(x-1):32*x]:
                 encoded_block += byte.to_bytes(1, byteorder="big")
-            encoded_data += rsa.rsa_encode(n, e, int.from_bytes(encoded_block, byteorder="big")).to_bytes(32, byteorder="big")
+            encoded_data += self.keyPair.encode(int.from_bytes(encoded_block, byteorder="big")).to_bytes(32, byteorder="big")
 
         encodedArray = []
         for index, pixel in enumerate(encoded_data):
@@ -182,7 +182,7 @@ class ImageFile:
             for byte in self.encodedContent[32*x:32*(x+1)]:
                 print(byte)
                 decoded_block += byte.to_bytes(1, byteorder="big")
-            decoded_data += rsa.rsa_decode(self.keys[0], self.keys[2], int.from_bytes(decoded_block, byteorder="big")).to_bytes(32, byteorder="big")
+            decoded_data += self.keyPair.decode(int.from_bytes(decoded_block, byteorder="big")).to_bytes(32, byteorder="big")
             print("Decoded:", decoded_data)
 
         print("Decoded:", decoded_data)
@@ -210,7 +210,6 @@ if originalImage.check_if_png():
     # originalImage.compute_spectrum("red")
     # originalImage.compute_spectrum("green")
     # originalImage.compute_spectrum("blue")
-
 
     originalImage.encode_with_rsa()
     originalImage.decode_with_rsa()

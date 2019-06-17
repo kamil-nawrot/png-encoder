@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/png-decoder.py" line="229" />
+    <bookmark url="file://$PROJECT_DIR$/png-decoder.py" line="228" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9f6d9efb-e55b-41be-a7d3-0ea3c0c0d1d3" name="Default Changelist" comment="refactoring">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/result-decoded.png" beforeDir="false" afterPath="$PROJECT_DIR$/img/result-decoded.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/result.png" beforeDir="false" afterPath="$PROJECT_DIR$/img/result.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/png-decoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/png-decoder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rsa.py" beforeDir="false" afterPath="$PROJECT_DIR$/rsa.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,23 +22,27 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/png-decoder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2420">
-              <caret line="202" column="43" selection-start-line="202" selection-start-column="43" selection-end-line="202" selection-end-column="43" />
+            <state relative-caret-position="351">
+              <caret line="153" column="41" selection-start-line="153" selection-start-column="41" selection-end-line="153" selection-end-column="41" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
-                <element signature="e#642#1284#0" />
-                <element signature="e#1322#1748#0" />
-                <element signature="e#1791#2488#0" />
-                <element signature="e#2532#4625#0" />
-                <element signature="e#5658#6028#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor" />
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/img/image50x50.png">
+          <provider selected="true" editor-type-id="images" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/rsa.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1020">
+              <caret line="6" column="30" selection-start-line="6" selection-start-column="30" selection-end-line="6" selection-end-column="30" />
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
@@ -42,18 +50,9 @@
           <provider selected="true" editor-type-id="images" />
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/img/result-decoded.png">
           <provider selected="true" editor-type-id="images" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/rsa.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="131">
-              <caret line="86" column="102" selection-start-line="86" selection-start-column="102" selection-end-line="86" selection-end-column="102" />
-            </state>
-          </provider>
         </entry>
       </file>
     </leaf>
@@ -90,9 +89,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/old.txt" />
+        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/rsa.py" />
         <option value="$PROJECT_DIR$/png-decoder.py" />
-        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -107,6 +106,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -128,7 +128,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -226,19 +225,18 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.09272919" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.09272919" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32936078" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32936078" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3997833" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32954547" />
-      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32936078" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="7" visible="true" weight="0.32936078" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32936078" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32936078" />
@@ -252,7 +250,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32936078" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32936078" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3997833" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -291,9 +289,7 @@
     <entry file="file://$PROJECT_DIR$/img/image8.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/result.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/result.png" />
     <entry file="file://$PROJECT_DIR$/img/image4.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -312,15 +308,28 @@
     <entry file="file://$PROJECT_DIR$/img/image10x10.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/img/image00.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/rsa.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="131">
-          <caret line="86" column="102" selection-start-line="86" selection-start-column="102" selection-end-line="86" selection-end-column="102" />
+        <state relative-caret-position="-1020">
+          <caret line="6" column="30" selection-start-line="6" selection-start-column="30" selection-end-line="6" selection-end-column="30" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/img/image00.png">
-      <provider selected="true" editor-type-id="images" />
+    <entry file="file://$PROJECT_DIR$/png-decoder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="153" column="41" selection-start-line="153" selection-start-column="41" selection-end-line="153" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/img/image50x50.png">
       <provider selected="true" editor-type-id="images" />
@@ -330,24 +339,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/img/result-decoded.png">
       <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/png-decoder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2420">
-          <caret line="202" column="43" selection-start-line="202" selection-start-column="43" selection-end-line="202" selection-end-column="43" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#642#1284#0" />
-            <element signature="e#1322#1748#0" />
-            <element signature="e#1791#2488#0" />
-            <element signature="e#2532#4625#0" />
-            <element signature="e#5658#6028#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
 </project>

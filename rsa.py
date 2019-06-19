@@ -97,3 +97,13 @@ class RSA:
         return decoded_data
 
 
+coding = RSA(256)
+coding.generate_key_pairs()
+original_message = b"\xb1\xb1\xd3\xec\xb3\xd4\xed\xb3\xd4\xed\xb3\xd4\xed\xb3\xd4\xed\xb6\xd4\xee\xb5\xd3\xed\xb5\xd3\xed\xb6\xd4\xff\xff\xff\xff"
+original_message = int.from_bytes(original_message, byteorder="big")
+print(original_message)
+encoded = coding.encode(original_message)
+print(encoded)
+decoded = coding.decode(encoded)
+print(decoded)
+

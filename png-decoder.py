@@ -29,7 +29,7 @@ class ImageFile:
         self.redChannel = []
         self.greenChannel = []
         self.blueChannel = []
-        self.keyPair = rsa.RSA(8)
+        self.keyPair = rsa.RSA(256)
         self.xorKey = np.random.randint(1073741823, 2147483647)
 
     def find_chunk(self, chunk_type, start):
@@ -166,22 +166,35 @@ class ImageFile:
         image_data = array.array('B', image_data).tobytes()
         print(image_data)
 
+        original_array = []
+        for index, pixel in enumerate(image_data):
+            original_array.append(pixel)
+        original_array = list(chunks(original_array, self.imageProperties["width"]*3))
+
+        png.from_array(original_array[:self.imageProperties["width"]][:self.imageProperties["height"]], 'RGB') \
+            .save('./img/original_result.png')
+
         self.keyPair.generate_key_pairs()
 
         print("start encoding...")
 
         encoded_data = b""
-        for x in range(0, len(image_data), 1):
-            encoded_bytes = image_data[x:x+1]
+        for x in range(0, len(image_data)+1, 32):
+            encoded_bytes = image_data[x:x+32]
+            length = len(encoded_bytes)
             encoded_bytes = int.from_bytes(encoded_bytes, byteorder="big")
-            encoded_bytes = self.keyPair.encode(encoded_bytes)
-            encoded_data += encoded_bytes.to_bytes(1, byteorder="big")
+            encoded_bytes = self.keyPair.encode(encoded_bytes).to_bytes(32, byteorder="big")
+            encoded_bytes = encoded_bytes[:length]
+            encoded_data += encoded_bytes
 
-        self.encodedContent = encoded_data
+        print("ORIGINAL DATA: ", len(image_data))
+        print("ENCODED DATA: ", len(encoded_data))
 
         encoded_array = []
         for index, pixel in enumerate(encoded_data):
             encoded_array.append(pixel)
+
+        self.encodedContent = encoded_array[:self.imageProperties["width"]*self.imageProperties["height"]*3]
         encoded_array = list(chunks(encoded_array, self.imageProperties["width"]*3))
 
         print(list(chunks(self.pixelArray, self.imageProperties["width"]*3)))
@@ -192,14 +205,19 @@ class ImageFile:
 
     def decode_with_rsa(self):
 
-        encoded_data = self.encodedContent
+        encoded_array = self.encodedContent
+        encoded_data = b""
+        for pixel in encoded_array:
+            encoded_data += pixel.to_bytes(1, byteorder="big")
+
         decoded_data = b""
-        for x in range(0, len(encoded_data), 1):
-            decoded_block = encoded_data[x:x+1]
+        for x in range(0, len(encoded_data), 32):
+            decoded_block = encoded_data[x:x+32]
             decoded_block = int.from_bytes(decoded_block, byteorder="big")
             decoded_block = self.keyPair.decode(decoded_block)
-            decoded_data += decoded_block.to_bytes(1, byteorder="big")
+            decoded_data += decoded_block.to_bytes(32, byteorder="big")
 
+        print("DECODED DATA: ", len(decoded_data))
         decoded_array = []
         for index, pixel in enumerate(decoded_data):
             decoded_array.append(pixel)
@@ -233,7 +251,7 @@ class ImageFile:
 ##########################################################
 
 
-originalImage = ImageFile("./img/image1000x1000.png", "rb")
+originalImage = ImageFile("./img/image_cat.png", "rb")
 if originalImage.check_if_png():
     originalImage.update_properties()
     originalImage.read_content()

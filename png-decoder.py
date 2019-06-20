@@ -6,7 +6,7 @@ import png
 import itertools
 import array
 import rsa
-
+from timeit import default_timer as timer
 
 def chunks(l, n):
     for i in range(0, len(l), n):
@@ -33,23 +33,21 @@ class ImageFile:
         self.xorKey = np.random.randint(1073741823, 2147483647)
 
     def find_chunk(self, chunk_type, start):
-
         self.desc.seek(start, 0)
         while self.desc.tell() < self.fileSize:
             if self.desc.read(1).find(bytes(chunk_type[0], 'utf-8')) != -1:
                 if self.desc.read(3).find(bytes(chunk_type[1:4], 'utf-8')) != -1:
                     self.desc.seek(-8, 1)
                     chunk_length = int.from_bytes(self.desc.read(4), byteorder="big")
-                    # print(chunk_type, "found ( length:", str(chunk_length), ") at", str(self.desc.tell()))
                     if chunk_type == "IDAT":
                         if [self.desc.tell(), chunk_length] not in self.foundIDAT:
                             self.foundIDAT.append([self.desc.tell(), chunk_length])
                         else:
                             self.find_chunk("IDAT", self.desc.tell()+chunk_length)
-                            return str(False)
+                            return str(False), -1
                     self.desc.read(4)
                     return self.desc.tell()-4, chunk_length
-        return str(False)
+        return str(False), -1
 
     def check_if_png(self):
         self.desc.seek(0, 0)
@@ -101,20 +99,20 @@ class ImageFile:
         else:
             print("INTERLACE METHOD:       " + str(self.imageProperties["interlaceMethod"]) + " - Adam7")
 
-        chunk_size = 0
+        chunk_length = 0
         if not self.find_chunk("iTXt", 0):
             if not self.find_chunk("tEXt", 0):
                 if not self.find_chunk("zTXt", 0):
                     print("no textual data found")
                 else:
-                    chunk_size = self.find_chunk("zTXt", 0)
+                    position, chunk_length = self.find_chunk("zTXt", 0)
             else:
-                chunk_size = self.find_chunk("tEXt", 0)
+                position, chunk_length = self.find_chunk("tEXt", 0)
         else:
-            chunk_size = self.find_chunk("iTXt", 0)
+            position, chunk_length = self.find_chunk("iTXt", 0)
 
-        if chunk_size > 0:
-            print(self.desc.read(chunk_size).decode('utf-8'))
+        if int(chunk_length) > 0:
+            print(self.desc.read(chunk_length).decode('utf-8'))
 
     def read_content(self):
         for x in range(100):
@@ -122,28 +120,27 @@ class ImageFile:
         for idat in self.foundIDAT:
             self.desc.seek(idat[0]+4, 0)
             self.compressedContent += self.desc.read(idat[1])
-            print("reading content...")
 
     def decompress(self):
+        print("Starting decompression...")
         decompressor = zlib.decompressobj()
         self.content = decompressor.decompress(self.compressedContent)
         decompressor.flush()
         self.contentSize = len(self.content)
-        print("decompression done:", self.contentSize)
+        print("Decompression done")
 
     def create_pixel_array(self):
         for index, pixel in enumerate(self.content):
             if index % (3*self.imageProperties["width"] + 1) is not 0:
                 self.pixelArray.append(pixel)
-        print("pixel array created")
-        # self.redChannel = []
-        # self.greenChannel = []
-        # self.blueChannel = []
-        # self.pixelArray = list(chunks(self.pixelArray, 3))
-        # for pixel in self.pixelArray:
-        #     self.redChannel.append(pixel[0])
-        #     self.greenChannel.append(pixel[1])
-        #     self.blueChannel.append(pixel[2])
+        self.redChannel = []
+        self.greenChannel = []
+        self.blueChannel = []
+        self.pixelArray = list(chunks(self.pixelArray, 3))
+        for pixel in self.pixelArray:
+            self.redChannel.append(pixel[0])
+            self.greenChannel.append(pixel[1])
+            self.blueChannel.append(pixel[2])
 
     def compute_spectrum(self, color):
         spectrum = None
@@ -158,112 +155,81 @@ class ImageFile:
         plt.show()
 
     def encode_with_rsa(self):
+        print("Begin encoding...")
         filter_mask = [1] * self.contentSize
         for index, value in enumerate(filter_mask):
             if index % (3 * self.imageProperties["width"] + 1) is 0:
                 filter_mask[index] = 0
         image_data = list(itertools.compress(self.content, filter_mask))
         image_data = array.array('B', image_data).tobytes()
-        print(image_data)
-
-        original_array = []
-        for index, pixel in enumerate(image_data):
-            original_array.append(pixel)
-        original_array = list(chunks(original_array, self.imageProperties["width"]*3))
-
-        png.from_array(original_array[:self.imageProperties["width"]][:self.imageProperties["height"]], 'RGB') \
-            .save('./img/original_result.png')
 
         self.keyPair.generate_key_pairs()
 
-        print("start encoding...")
-
         encoded_data = b""
-        for x in range(0, len(image_data)+1, 32):
+        for x in range(0, len(image_data), 32):
             encoded_bytes = image_data[x:x+32]
-            length = len(encoded_bytes)
             encoded_bytes = int.from_bytes(encoded_bytes, byteorder="big")
+            encoded_bytes = encoded_bytes ^ self.keyPair.publicKey[1]
             encoded_bytes = self.keyPair.encode(encoded_bytes).to_bytes(32, byteorder="big")
-            encoded_bytes = encoded_bytes[:length]
-            encoded_data += encoded_bytes
-
-        print("ORIGINAL DATA: ", len(image_data))
-        print("ENCODED DATA: ", len(encoded_data))
+            encoded_data += encoded_bytes # .to_bytes(32, byteorder="big")
 
         encoded_array = []
         for index, pixel in enumerate(encoded_data):
             encoded_array.append(pixel)
 
-        self.encodedContent = encoded_array[:self.imageProperties["width"]*self.imageProperties["height"]*3]
+        self.encodedContent = encoded_data
         encoded_array = list(chunks(encoded_array, self.imageProperties["width"]*3))
-
-        print(list(chunks(self.pixelArray, self.imageProperties["width"]*3)))
-        print(encoded_array)
 
         png.from_array(encoded_array[:self.imageProperties["width"]][:self.imageProperties["height"]], 'RGB')\
             .save('./img/result.png')
 
+        print("Successfully encoded and saved to file")
+
     def decode_with_rsa(self):
-
-        encoded_array = self.encodedContent
-        encoded_data = b""
-        for pixel in encoded_array:
-            encoded_data += pixel.to_bytes(1, byteorder="big")
-
+        print("Begin decoding...")
+        encoded_data = self.encodedContent
         decoded_data = b""
         for x in range(0, len(encoded_data), 32):
             decoded_block = encoded_data[x:x+32]
             decoded_block = int.from_bytes(decoded_block, byteorder="big")
             decoded_block = self.keyPair.decode(decoded_block)
+            decoded_block = decoded_block ^ self.keyPair.publicKey[1]
             decoded_data += decoded_block.to_bytes(32, byteorder="big")
 
-        print("DECODED DATA: ", len(decoded_data))
         decoded_array = []
         for index, pixel in enumerate(decoded_data):
             decoded_array.append(pixel)
         decoded_array = list(chunks(decoded_array, self.imageProperties["width"]*3))
 
-        print(decoded_array)
-
         png.from_array(decoded_array[:self.imageProperties["width"]][:self.imageProperties["height"]], 'RGB') \
             .save('./img/result-decoded.png')
 
-        # decoded_data = b""
-        # decoded_block = b""
-        #
-        # for x in range(1, (self.contentSize // 32) + 2):
-        #     decoded_block = b""
-        #     for byte in self.encodedContent[32*x:32*(x+1)]:
-        #         print(byte)
-        #         decoded_block += byte.to_bytes(1, byteorder="big")
-        #     decoded_data += self.keyPair.decode(int.from_bytes(decoded_block, byteorder="big")).to_bytes(32, byteorder="big")
-        #     print("Decoded:", decoded_data)
-        #
-        # print("Decoded:", decoded_data)
-        #
-        # decodedArray = []
-        # for index, pixel in enumerate(decoded_data):
-        #     decodedArray.append(pixel)
-        #
-        # decodedArray = list(chunks(decodedArray, self.imageProperties["width"]*3))
-        # print(decodedArray)
+        print("Successfully decoded and saved to file")
 
 ##########################################################
 
 
 originalImage = ImageFile("./img/image_cat.png", "rb")
+
+
+##########################################################
+
 if originalImage.check_if_png():
+
     originalImage.update_properties()
     originalImage.read_content()
     originalImage.decompress()
     originalImage.create_pixel_array()
-    # originalImage.display_properties()
+    originalImage.display_properties()
     # originalImage.compute_spectrum("red")
     # originalImage.compute_spectrum("green")
     # originalImage.compute_spectrum("blue")
 
+    start = timer()
     originalImage.encode_with_rsa()
     originalImage.decode_with_rsa()
+    stop = timer()
+    print("ELAPSED TIME:", stop-start)
 
 else:
     print("Wrong file format")
